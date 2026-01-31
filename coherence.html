@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Map Viewer</title>
+  <title>Coherence Map</title>
   <style>
     body {
       margin: 0;
@@ -28,7 +28,7 @@
 </head>
 <body>
   <div id="container">
-    <img id="img" src="map_method_A_coherence.jpg" alt="Map">
+    <img id="img" src="map_method_A_coherence.jpg" alt="Coherence Map">
   </div>
 
   <script>
@@ -40,4 +40,47 @@
     let isDragging = false;
     let start = { x: 0, y: 0 };
 
-    // Sobald das Bild geladen ist → Start
+    img.onload = () => {
+      const imgW = img.naturalWidth;
+      const imgH = img.naturalHeight;
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
+
+      scale = Math.min(winW / imgW, winH / imgH);
+      img.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    };
+
+    container.addEventListener('wheel', e => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 0.9 : 1.1;
+      scale *= delta;
+      img.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    });
+
+    container.addEventListener('mousedown', e => {
+      isDragging = true;
+      start.x = e.clientX - pos.x;
+      start.y = e.clientY - pos.y;
+      container.style.cursor = 'grabbing';
+    });
+
+    container.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      pos.x = e.clientX - start.x;
+      pos.y = e.clientY - start.y;
+      img.style.left = `calc(50% + ${pos.x}px)`;
+      img.style.top = `calc(50% + ${pos.y}px)`;
+    });
+
+    container.addEventListener('mouseup', () => {
+      isDragging = false;
+      container.style.cursor = 'grab';
+    });
+
+    container.addEventListener('mouseleave', () => {
+      isDragging = false;
+      container.style.cursor = 'grab';
+    });
+  </script>
+</body>
+</html>
